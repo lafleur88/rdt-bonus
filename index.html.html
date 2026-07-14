@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мой бонус — RDT Pro</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0D0B1A;color:#E8E4F8;min-height:100vh}
+.hdr{background:linear-gradient(135deg,#6B3FA0,#2D4A6A);padding:20px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.hdr h1{font-size:22px;font-weight:700;color:#fff}
+.hdr p{font-size:12px;color:#C8B8F0;margin-top:3px}
+.month-sel{display:flex;align-items:center;gap:10px}
+.month-sel label{font-size:12px;color:#C8B8F0;white-space:nowrap}
+select{background:#1A1530;border:1px solid #6B3FA0;border-radius:8px;color:#fff;padding:8px 14px;font-size:14px;font-weight:700;cursor:pointer;outline:none}
+.main{padding:24px 32px;max-width:1020px;margin:0 auto}
+
+/* ИТОГО */
+.total-card{background:linear-gradient(135deg,#6B3FA0,#4A2878);border-radius:16px;padding:28px 32px;margin-bottom:20px}
+.total-top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px}
+.total-lbl{font-size:13px;color:#C8B8F0;font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.total-val{font-size:56px;font-weight:700;color:#fff;line-height:1}
+.total-sub{font-size:13px;color:#C8B8F0;margin-top:8px}
+.total-breakdown{display:flex;gap:24px;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.15)}
+.bk-item{font-size:13px;color:#C8B8F0}
+.bk-item span{color:#fff;font-weight:700}
+
+/* WARN */
+.warn-box{border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.5}
+.warn-box.amber{background:#2A1800;border-left:4px solid #B45309;color:#FBB040}
+.warn-box.red{background:#1A0808;border-left:4px solid #C0392B;color:#FF9090}
+.warn-box.green{background:#081A10;border-left:4px solid #1A7A4A;color:#4AE88A}
+.warn-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+
+/* МОТИВАЦИЯ */
+.mot-card{background:linear-gradient(135deg,#081A10,#0A1520);border:1px solid #1A7A4A;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.mot-left{font-size:13px;color:#4AE88A;font-weight:700}
+.mot-left p{font-size:11px;color:#6A9A70;font-weight:400;margin-top:3px}
+.mot-right{font-size:32px;font-weight:700;color:#fff}
+
+/* ПОТОКИ */
+.streams{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px}
+.stream{background:#1A1530;border-radius:12px;padding:20px;border:2px solid #2A2050;transition:border-color .2s}
+.stream.active{border-color:#6B3FA0}
+.s-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.s-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px}
+.s-rate{font-size:10px;color:#6A5A90}
+.s-bonus{font-size:28px;font-weight:700;color:#fff;text-align:right}
+.s-bonus-lbl{font-size:10px;color:#6A5A90;text-align:right}
+
+/* ИНПУТЫ */
+.ig{margin-bottom:10px}
+.ig label{display:block;font-size:10px;color:#6A5A90;font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+.ir{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.iw{position:relative}
+.iw .pfx{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;font-weight:700;color:#6A5A90;pointer-events:none}
+input[type=number]{width:100%;background:#0D0B1A;border:1px solid #3A2870;border-radius:8px;padding:9px 9px 9px 26px;color:#E8E4F8;font-size:15px;font-weight:700;outline:none;transition:border .2s}
+input[type=number]:focus{border-color:#6B3FA0}
+.hint{font-size:10px;color:#4A3A70;margin-top:3px;line-height:1.4}
+
+/* РАСЧЁТ */
+.cr{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #2A2050;font-size:12px}
+.cr:last-child{border:none;padding-top:7px;font-weight:700;font-size:13px}
+.cl{color:#9880D0}.cv{color:#fff;font-weight:600}
+.cv.g{color:#4AE88A}.cv.a{color:#FBB040}.cv.r{color:#FF7070}
+
+/* ПЛАН-ФАКТ */
+.pf{background:#120F24;border-radius:8px;padding:10px 12px;margin-top:10px}
+.pf-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-bottom:5px}
+.bar{height:6px;background:#0D0B1A;border-radius:3px;overflow:hidden;margin-bottom:5px}
+.bar-f{height:100%;border-radius:3px;transition:width .4s}
+.pf-note{font-size:10px;margin-top:4px}
+.badge{display:inline-block;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:700}
+.bg{background:#0F4020;color:#4AE88A}.ba{background:#4A2000;color:#FBB040}.br{background:#4A0A0A;color:#FF7070}
+
+/* ПЛАН ПО МЕСЯЦАМ */
+.mp-card{background:#1A1530;border-radius:12px;padding:20px;border:1px solid #2A2050;margin-bottom:16px}
+.mp-card h2{font-size:11px;font-weight:700;color:#9880D0;text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{background:#2A1E50;color:#9880D0;padding:7px 10px;text-align:left;font-weight:700;font-size:10px;text-transform:uppercase}
+td{padding:7px 10px;border-bottom:1px solid #1A1530;color:#C8C0E0;vertical-align:middle}
+tr.cur td{background:#1E1840}
+tr:hover td{background:#181228}
+.tg{color:#4AE88A;font-weight:700}.ta{color:#FBB040;font-weight:700}.tr2{color:#FF7070}.th{color:#fff;font-weight:700}
+.sep{border-top:1px solid #2A2050;margin:16px 0}
+
+@media(max-width:780px){.streams{grid-template-columns:1fr}.ir{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>Мой бонус — RDT Pro</h1>
+    <p>Прогноз дохода · 3 потока · все выплаты по факту</p>
+  </div>
+  <div class="month-sel">
+    <label>Месяц:</label>
+    <select id="month_sel" onchange="onMonthChange()">
+      <option value="0">Август 2026 (мес 1)</option>
+      <option value="1">Сентябрь 2026 (мес 2)</option>
+      <option value="2">Октябрь 2026 (мес 3)</option>
+      <option value="3">Ноябрь 2026 (мес 4) ★</option>
+      <option value="4">Декабрь 2026 (мес 5)</option>
+      <option value="5">Январь 2027 (мес 6)</option>
+      <option value="6">Февраль 2027 (мес 7)</option>
+      <option value="7">Март 2027 (мес 8)</option>
+    </select>
+  </div>
+</div>
+
+<div class="main">
+
+  <div id="warn_area"></div>
+
+  <!-- ИТОГО -->
+  <div class="total-card">
+    <div class="total-top">
+      <div>
+        <div class="total-lbl">Мой доход за месяц</div>
+        <div class="total-val" id="t_total">200 000 ₽</div>
+        <div class="total-sub" id="t_sub">фикс 200 000 ₽ · бонусы 0 ₽</div>
+      </div>
+    </div>
+    <div class="total-breakdown">
+      <div class="bk-item">Фикс: <span>200 000 ₽</span></div>
+      <div class="bk-item">TRX бонус: <span id="bd_trx">0 ₽</span></div>
+      <div class="bk-item">Лиц бонус: <span id="bd_lic">0 ₽</span></div>
+      <div class="bk-item">Конс бонус: <span id="bd_cons">0 ₽</span></div>
+      <div class="bk-item">Бонус за переданного клиента: <span id="bd_am">0 ₽</span></div>
+    </div>
+  </div>
+
+  <!-- МОТИВАЦИЯ -->
+  <div class="mot-card" id="mot_card" style="display:none">
+    <div class="mot-left">
+      🚀 Прогноз при текущем темпе
+      <p id="mot_sub">продолжай — ты на пути к перевыполнению</p>
+    </div>
+    <div class="mot-right" id="mot_val">—</div>
+  </div>
+
+  <!-- 3 ПОТОКА -->
+  <div class="streams">
+
+    <!-- ПОТОК 1: TRX -->
+    <div class="stream" id="s_trx">
+      <div class="s-hdr">
+        <div>
+          <div class="s-title" style="color:#9880D0">💸 Транзакционный</div>
+          <div class="s-rate" id="trx_rate_lbl">2% от выручки RDT</div>
+        </div>
+        <div><div class="s-bonus" id="s1_val">0 ₽</div><div class="s-bonus-lbl">бонус</div></div>
+      </div>
+
+      <div class="ig">
+        <div class="ir">
+          <div>
+            <div style="font-size:10px;color:#6A5A90;margin-bottom:3px">Ожидаемый оборот $</div>
+            <div class="iw"><span class="pfx">$</span><input type="number" id="trx_exp" min="0" step="500000" oninput="calc()" placeholder="0"></div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:#6A5A90;margin-bottom:3px">Фактический оборот $</div>
+            <div class="iw"><span class="pfx">$</span><input type="number" id="trx_act" min="0" step="500000" oninput="calc()" placeholder="0"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cr"><span class="cl">Выручка RDT (× 1% × 76)</span><span class="cv" id="trx_rdt">0 ₽</span></div>
+      <div class="cr"><span class="cl" id="trx_rate_row">× 2%</span><span class="cv g" id="trx_b_val">0 ₽</span></div>
+
+      <div class="pf">
+        <div class="pf-row">
+          <span style="color:#6A5A90">план</span>
+          <span id="trx_plan_lbl" style="color:#9880D0">—</span>
+          <span id="trx_badge"></span>
+        </div>
+        <div class="bar"><div class="bar-f" id="trx_bar" style="width:0%;background:#6B3FA0"></div></div>
+      </div>
+
+      <div class="sep"></div>
+      <div class="ig">
+        <label>Бонус за переданного клиента</label>
+        <div class="hint" style="margin-bottom:6px">Клиент передан AM 1–2 мес назад. Ты продолжаешь получать бонус — но сниженный, чтобы стимулировать искать новых.</div>
+        <div style="font-size:10px;color:#6A5A90;margin-bottom:3px">Оборот переданного клиента $</div>
+        <div class="iw"><span class="pfx">$</span><input type="number" id="am_vol" min="0" step="100000" oninput="calc()" placeholder="0"></div>
+        <div class="hint">Бонус = 30% от обычной ставки на этот оборот</div>
+      </div>
+      <div class="cr"><span class="cl">Бонус за переданного (30%)</span><span class="cv a" id="am_val">0 ₽</span></div>
+    </div>
+
+    <!-- ПОТОК 2: ЛИЦЕНЗИИ -->
+    <div class="stream" id="s_lic">
+      <div class="s-hdr">
+        <div>
+          <div class="s-title" style="color:#1A9A5A">📋 Лицензии</div>
+          <div class="s-rate">10% до дек 2026 / 5% с янв 2027</div>
+        </div>
+        <div><div class="s-bonus" id="s2_val">0 ₽</div><div class="s-bonus-lbl">бонус</div></div>
+      </div>
+
+      <div class="ig">
+        <label>Сумма продаж лицензий за месяц ₽</label>
+        <div class="iw"><span class="pfx">₽</span><input type="number" id="lic_fact" min="0" step="100000" oninput="calc()" placeholder="0"></div>
+        <div class="hint">До дек 2026: Базовый 37 000 ₽ · Полный 96 000 ₽ · Terminal 18 000 ₽/seat
+С янв 2027: Базовый 18 500 ₽ · Полный 48 000 ₽ · Terminal 9 000 ₽/seat</div>
+      </div>
+
+      <div class="cr"><span class="cl">Бонус 10% от маржи (маржа 30%)</span><span class="cv g" id="lic_b_val">0 ₽</span></div>
+
+      <div class="pf" id="lic_pf">
+        <div class="pf-row">
+          <span style="color:#6A5A90">план месяца</span>
+          <span id="lic_plan_lbl" style="color:#9880D0">—</span>
+          <span id="lic_badge"></span>
+        </div>
+        <div class="bar"><div class="bar-f" id="lic_bar" style="width:0%;background:#1A7A4A"></div></div>
+        <div class="pf-note" id="lic_note"></div>
+      </div>
+    </div>
+
+    <!-- ПОТОК 3: КОНСАЛТИНГ -->
+    <div class="stream" id="s_cons">
+      <div class="s-hdr">
+        <div>
+          <div class="s-title" style="color:#B45309">🔧 Консалтинг</div>
+          <div class="s-rate">2% от оплаты клиента</div>
+        </div>
+        <div><div class="s-bonus" id="s3_val">0 ₽</div><div class="s-bonus-lbl">бонус</div></div>
+      </div>
+
+      <div class="ig">
+        <label>Получено от клиента в этом месяце ₽</label>
+        <div class="iw"><span class="pfx">₽</span><input type="number" id="cons_paid" min="0" step="250000" oninput="calc()" placeholder="0"></div>
+        <div class="hint">Предоплата 50% → бонус с неё сейчас. Финальная оплата → ещё бонус при получении.</div>
+      </div>
+
+      <div class="ig">
+        <label>Сумма всего проекта ₽ (для справки)</label>
+        <div class="iw"><span class="pfx">₽</span><input type="number" id="cons_total" min="0" step="500000" oninput="calc()" placeholder="0"></div>
+      </div>
+
+      <div class="cr"><span class="cl">Бонус с текущей оплаты (2%)</span><span class="cv a" id="cons_b_val">0 ₽</span></div>
+      <div class="cr"><span class="cl">Полный бонус с проекта</span><span class="cv" id="cons_full_val" style="color:#9880D0">—</span></div>
+
+      <div style="margin-top:10px;padding:8px 10px;background:#1A0A00;border-radius:6px;font-size:10px;color:#B45309;line-height:1.5">
+        ⚠ Если проект отменён и деньги возвращены — бонус вычитается в следующем месяце
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ПЛАН ПО МЕСЯЦАМ -->
+  <div class="mp-card">
+    <h2>📅 Помесячный план и прогноз</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Месяц</th><th>Дата</th>
+          <th>План оборота $</th><th>Факт оборота $</th>
+          <th>План лицензий ₽</th><th>Факт лицензий ₽</th>
+          <th>TRX бонус ₽</th><th>Лиц бонус ₽</th>
+          <th>Итого ₽</th><th>%</th>
+        </tr>
+      </thead>
+      <tbody id="plan_tbody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+const FX=76,M=0.01,TR=0.02,CR=0.02,FIX=200000;
+
+const PLAN=[
+  {mo:'Мес 1',dt:'Август 2026',    vp:3000000,  lp:0,       },
+  {mo:'Мес 2',dt:'Сентябрь 2026',  vp:5000000,  lp:0,       },
+  {mo:'Мес 3',dt:'Октябрь 2026',   vp:7500000,  lp:0,       },
+  {mo:'Мес 4',dt:'Ноябрь 2026',    vp:10000000, lp:700000,  },
+  {mo:'Мес 5',dt:'Декабрь 2026',   vp:12500000, lp:1200000, },
+  {mo:'Мес 6',dt:'Январь 2027',    vp:15000000, lp:1500000, },
+  {mo:'Мес 7',dt:'Февраль 2027',   vp:17000000, lp:1800000, },
+  {mo:'Мес 8',dt:'Март 2027',      vp:19000000, lp:2000000, },
+];
+
+const FACT=PLAN.map(()=>({va:0,la:0,ca:0,ct:0,am:0}));
+let ci=0;
+
+function fR(n){return Math.round(n).toLocaleString('ru-RU')+' ₽'}
+function fD(n){return Math.round(n).toLocaleString('ru-RU')+' $'}
+function pCls(p){return p>=100?'bg':p>=80?'ba':'br'}
+function pColor(p){return p>=100?'#4AE88A':p>=80?'#FBB040':'#FF7070'}
+
+function getRate(i,la,lp){
+  if(i<3||!lp) return TR;
+  const r=la/lp;
+  if(r>=1) return TR;
+  if(r>=0.8) return 0.015;
+  return 0.01;
+}
+
+function save(){
+  FACT[ci].va=parseFloat(document.getElementById('trx_act').value)||0;
+  FACT[ci].la=parseFloat(document.getElementById('lic_fact').value)||0;
+  FACT[ci].ca=parseFloat(document.getElementById('cons_paid').value)||0;
+  FACT[ci].ct=parseFloat(document.getElementById('cons_total').value)||0;
+  FACT[ci].am=parseFloat(document.getElementById('am_vol').value)||0;
+}
+
+function load(){
+  const p=PLAN[ci],f=FACT[ci];
+  document.getElementById('trx_exp').value=p.vp||'';
+  document.getElementById('trx_act').value=f.va||'';
+  document.getElementById('lic_fact').value=f.la||'';
+  document.getElementById('cons_paid').value=f.ca||'';
+  document.getElementById('cons_total').value=f.ct||'';
+  document.getElementById('am_vol').value=f.am||'';
+}
+
+function onMonthChange(){
+  save();
+  ci=parseInt(document.getElementById('month_sel').value);
+  load();
+  calc();
+}
+
+function calc(){
+  save();
+  const p=PLAN[ci];
+  const ve=parseFloat(document.getElementById('trx_exp').value)||0;
+  const va=parseFloat(document.getElementById('trx_act').value)||0;
+  const la=parseFloat(document.getElementById('lic_fact').value)||0;
+  const ca=parseFloat(document.getElementById('cons_paid').value)||0;
+  const ct=parseFloat(document.getElementById('cons_total').value)||0;
+  const am=parseFloat(document.getElementById('am_vol').value)||0;
+
+  const rate=getRate(ci,la,p.lp);
+  const rdt=va*M*FX;
+  const trx_b=rdt*rate;
+  const am_rdt=am*M*FX;
+  const am_b=am_rdt*TR*0.30;
+  const LR=0.10; // 10% до дек 2026 (мес 0-4), 5% с янв 2027 (мес 5+)
+  const lic_b=la*LR;
+  const cons_b=ca*CR;
+  const cons_full=ct*CR;
+  const bonus=trx_b+am_b+lic_b+cons_b;
+  const total=FIX+bonus;
+
+  // ИТОГО
+  document.getElementById('t_total').textContent=fR(total);
+  document.getElementById('t_sub').textContent=`фикс 200 000 ₽  ·  бонусы ${fR(bonus)}`;
+  document.getElementById('bd_trx').textContent=fR(trx_b);
+  document.getElementById('bd_lic').textContent=fR(lic_b);
+  document.getElementById('bd_cons').textContent=fR(cons_b);
+  document.getElementById('bd_am').textContent=fR(am_b);
+
+  // ПОТОК 1
+  document.getElementById('s1_val').textContent=fR(trx_b+am_b);
+  document.getElementById('trx_rate_lbl').textContent=(rate*100).toFixed(1)+'% от выручки RDT'+(rate<TR?' ⚠':'');
+  document.getElementById('trx_rdt').textContent=fR(rdt);
+  document.getElementById('trx_rate_row').textContent='× '+(rate*100).toFixed(1)+'%'+(rate<TR?' (план лицензий недовыполнен)':'');
+  document.getElementById('trx_b_val').textContent=fR(trx_b);
+  document.getElementById('trx_b_val').className='cv '+(rate===TR?'g':'a');
+  document.getElementById('am_val').textContent=fR(am_b);
+
+  const trx_pct=ve>0?Math.min(200,Math.round(va/ve*100)):0;
+  document.getElementById('trx_plan_lbl').textContent=fD(ve);
+  document.getElementById('trx_badge').innerHTML=ve>0?`<span class="badge ${pCls(trx_pct)}">${trx_pct}%</span>`:'';
+  document.getElementById('trx_bar').style.cssText=`width:${Math.min(100,trx_pct)}%;background:${pColor(trx_pct)}`;
+
+  // ПОТОК 2
+  const cur_lr=0.10;
+  document.getElementById('s2_val').textContent=fR(lic_b);
+  document.getElementById('s_lic').querySelector('.s-rate').textContent=(cur_lr*100).toFixed(0)+'% от суммы '+(ci<=4?'(до дек 2026)':'(с янв 2027)');
+  document.getElementById('lic_b_val').textContent=fR(lic_b);
+  if(p.lp>0){
+    const lp_pct=Math.min(200,Math.round(la/p.lp*100));
+    document.getElementById('lic_plan_lbl').textContent=fR(p.lp);
+    document.getElementById('lic_badge').innerHTML=`<span class="badge ${pCls(lp_pct)}">${lp_pct}%</span>`;
+    document.getElementById('lic_bar').style.cssText=`width:${Math.min(100,lp_pct)}%;background:${pColor(lp_pct)}`;
+    let note='',col='';
+    if(lp_pct>=100){note='✅ TRX ставка 2% в след. месяце гарантирована';col='#4AE88A';}
+    else if(lp_pct>=80){note=`⚡ До плана: ${fR(p.lp-la)} — иначе TRX ставка 1,5%`;col='#FBB040';}
+    else{note=`❌ До плана: ${fR(p.lp-la)} — TRX ставка упадёт до 1%`;col='#FF7070';}
+    document.getElementById('lic_note').textContent=note;
+    document.getElementById('lic_note').style.color=col;
+  } else {
+    document.getElementById('lic_plan_lbl').textContent='план с мес 4';
+    document.getElementById('lic_badge').innerHTML='';
+    document.getElementById('lic_bar').style.width='0%';
+    document.getElementById('lic_note').textContent='Лицензионный план начинается с ноября';
+    document.getElementById('lic_note').style.color='#6A5A90';
+  }
+
+  // ПОТОК 3
+  document.getElementById('s3_val').textContent=fR(cons_b);
+  document.getElementById('cons_b_val').textContent=fR(cons_b);
+  document.getElementById('cons_full_val').textContent=cons_full>0?fR(cons_full):'—';
+
+  // WARN
+  const wa=document.getElementById('warn_area');
+  if(ci>=3&&p.lp>0){
+    const lp_pct2=p.lp>0?Math.round(la/p.lp*100):0;
+    if(lp_pct2<80&&la>0){
+      wa.innerHTML=`<div class="warn-box red"><span class="warn-icon">⚠</span>
+        <div>Лицензионный план на <b>${lp_pct2}%</b> — в следующем месяце TRX ставка снизится с 2% до <b>1%</b>. 
+        Потеря: ${fR(rdt*(TR-0.01))}/мес при текущем обороте. Нужно ещё ${fR(p.lp-la)} продаж лицензий.</div></div>`;
+    } else if(lp_pct2>=80&&lp_pct2<100){
+      wa.innerHTML=`<div class="warn-box amber"><span class="warn-icon">⚡</span>
+        <div>До плана осталось <b>${fR(p.lp-la)}</b>. Выполни — TRX ставка 2% в следующем месяце.</div></div>`;
+    } else if(lp_pct2>=100){
+      wa.innerHTML=`<div class="warn-box green"><span class="warn-icon">✅</span>
+        <div>Лицензионный план выполнен! TRX ставка 2% в следующем месяце гарантирована.</div></div>`;
+    } else { wa.innerHTML=''; }
+  } else { wa.innerHTML=''; }
+
+  // МОТИВАЦИЯ
+  const mc=document.getElementById('mot_card');
+  if(va>0&&ve>0&&va>=ve*0.5){
+    const proj_total=FIX+(va*1.15*M*FX*rate)+lic_b+cons_b;
+    if(proj_total>total*1.08){
+      mc.style.display='flex';
+      document.getElementById('mot_val').textContent=fR(proj_total);
+      document.getElementById('mot_sub').textContent=`при росте оборота +15% · прирост +${fR(proj_total-total)}`;
+    } else { mc.style.display='none'; }
+  } else { mc.style.display='none'; }
+
+  // Highlight
+  [['s_trx',trx_b+am_b],['s_lic',lic_b],['s_cons',cons_b]].forEach(([id,v])=>{
+    document.getElementById(id).classList.toggle('active',
+      v===Math.max(trx_b+am_b,lic_b,cons_b)&&v>0);
+  });
+
+  buildTable();
+}
+
+function buildTable(){
+  let rows='';
+  PLAN.forEach((p,i)=>{
+    const f=FACT[i];
+    const va=i===ci?(parseFloat(document.getElementById('trx_act').value)||0):f.va;
+    const la=i===ci?(parseFloat(document.getElementById('lic_fact').value)||0):f.la;
+    const rate=getRate(i,la,p.lp);
+    const trx_b=va*M*FX*rate;
+    const LR=0.10; // 10% до дек 2026 (мес 0-4), 5% с янв 2027 (мес 5+)
+  const LR_t=0.10;
+    const lic_b=la*LR_t;
+    const total=FIX+trx_b+lic_b;
+    const plan_t=FIX+p.vp*M*FX*TR+p.lp*LR;
+    const pct=va>0||la>0?Math.round(total/plan_t*100):0;
+    const isCur=i===ci;
+    const tcls=total>=450000?'tg':total>=350000?'ta':'';
+    rows+=`<tr class="${isCur?'cur':''}">
+      <td>${p.mo}${isCur?' <span class="badge" style="background:#3A2870;color:#C8B8F0">сейчас</span>':''}</td>
+      <td style="color:#9880D0">${p.dt}</td>
+      <td style="color:#6A5A90">${Math.round(p.vp).toLocaleString('ru-RU')} $</td>
+      <td>${va>0?`<span class="${va>=p.vp?'tg':'ta'}">${Math.round(va).toLocaleString('ru-RU')} $</span>`:'<span style="color:#3A2870">—</span>'}</td>
+      <td style="color:#6A5A90">${p.lp?Math.round(p.lp).toLocaleString('ru-RU')+' ₽':'—'}</td>
+      <td>${la>0?Math.round(la).toLocaleString('ru-RU')+' ₽':'<span style="color:#3A2870">—</span>'}</td>
+      <td>${va>0?Math.round(trx_b).toLocaleString('ru-RU')+' ₽':'<span style="color:#3A2870">—</span>'}</td>
+      <td>${la>0?Math.round(lic_b).toLocaleString('ru-RU')+' ₽':'<span style="color:#3A2870">—</span>'}</td>
+      <td class="${tcls} th">${va>0||la>0?Math.round(total).toLocaleString('ru-RU')+' ₽':'<span style="color:#3A2870">—</span>'}</td>
+      <td>${va>0||la>0?`<span class="badge ${pCls(pct)}">${pct}%</span>`:'—'}</td>
+    </tr>`;
+  });
+  document.getElementById('plan_tbody').innerHTML=rows;
+}
+
+load();calc();
+</script>
+</body>
+</html>
